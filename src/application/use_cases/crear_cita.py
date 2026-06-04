@@ -8,6 +8,7 @@ class CrearCitaUseCase:
         self.cita_repository = cita_repository
 
     def execute(self, cliente, placa, marca, color, servicio):
+        # El caso de uso valida la entrada antes de crear la entidad del dominio.
         campos = {
             "cliente": cliente,
             "placa": placa,
@@ -22,6 +23,7 @@ class CrearCitaUseCase:
         if self.cita_repository.existe_placa_activa(placa):
             return self._respuesta(False, "Error: Ya existe una cita activa para la misma placa.")
 
+        # El repositorio entrega el ID; la entidad nace con estado pendiente por defecto.
         cita = Cita(
             id=self.cita_repository.siguiente_id(),
             cliente=cliente,

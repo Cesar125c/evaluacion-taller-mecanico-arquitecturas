@@ -9,6 +9,7 @@ class CancelarCitaUseCase:
         self.buscar_cita_use_case = BuscarCitaUseCase(cita_repository)
 
     def execute(self, id_cita):
+        # Primero se localiza la cita; luego la entidad decide si puede cancelarse.
         respuesta = self.buscar_cita_use_case.execute(id_cita)
         if not respuesta["success"]:
             return respuesta

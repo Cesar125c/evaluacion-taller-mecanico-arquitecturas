@@ -9,6 +9,7 @@ from src.presentation.console.menu import Menu
 
 def main():
     """Punto de entrada del sistema."""
+    # Se arma la aplicación conectando infraestructura, casos de uso y presentación.
     cita_repository = CitaRepositoryMemory()
     menu = Menu(
         crear_cita_use_case=CrearCitaUseCase(cita_repository),

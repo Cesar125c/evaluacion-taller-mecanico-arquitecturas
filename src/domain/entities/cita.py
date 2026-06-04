@@ -15,6 +15,7 @@ class Cita:
 
     def cancelar(self):
         """Aplica la regla de negocio para cancelar una cita."""
+        # La entidad protege sus propias transiciones de estado.
         if self.esta_cancelada():
             return self._respuesta(False, f"La cita {self.id} ya estaba cancelada.")
 
@@ -26,6 +27,7 @@ class Cita:
 
     def atender(self):
         """Aplica la regla de negocio para atender una cita."""
+        # Solo una cita activa y pendiente puede pasar a atendida.
         if self.esta_atendida():
             return self._respuesta(False, f"La cita {self.id} ya estaba marcada como atendida.")
 
@@ -42,6 +44,7 @@ class Cita:
         return self.estado == EstadoCita.ATENDIDA
 
     def esta_activa(self):
+        # Para este dominio, una cita activa es toda cita que no fue cancelada.
         return self.estado != EstadoCita.CANCELADA
 
     def convertir_a_diccionario(self):

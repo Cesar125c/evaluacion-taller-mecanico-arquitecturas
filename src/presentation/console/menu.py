@@ -53,6 +53,7 @@ class Menu:
 
     def _crear_cita(self):
         print("\n--- CREAR NUEVA CITA ---")
+        # La vista solo captura datos y delega la regla al caso de uso.
         respuesta = self.crear_cita_use_case.execute(
             cliente=input("Nombre del cliente: ").strip(),
             placa=input("Placa del vehiculo: ").strip(),

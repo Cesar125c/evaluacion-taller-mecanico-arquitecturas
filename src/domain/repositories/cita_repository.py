@@ -4,6 +4,8 @@ from abc import ABC, abstractmethod
 class CitaRepository(ABC):
     """Puerto del dominio para acceder a citas."""
 
+    # Define lo que necesita el dominio sin depender de una forma concreta de almacenamiento.
+
     @abstractmethod
     def guardar(self, cita):
         pass

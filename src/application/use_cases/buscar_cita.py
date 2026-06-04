@@ -5,6 +5,7 @@ class BuscarCitaUseCase:
         self.cita_repository = cita_repository
 
     def execute(self, id_cita):
+        # El ID llega desde consola como texto, por eso se valida antes de buscar.
         respuesta_id = self._validar_id(id_cita)
         if not respuesta_id["success"]:
             return respuesta_id

@@ -9,6 +9,7 @@ class CitaRepositoryMemory(CitaRepository):
         self.proximo_id = 1
 
     def guardar(self, cita):
+        # Si la cita ya existe, se reemplaza para conservar el cambio de estado.
         cita_existente = self.buscar_por_id(cita.id)
         if cita_existente:
             indice = self.citas.index(cita_existente)
@@ -28,6 +29,7 @@ class CitaRepositoryMemory(CitaRepository):
         return None
 
     def existe_placa_activa(self, placa):
+        # Evita registrar dos citas activas para el mismo vehículo.
         placa_normalizada = placa.lower()
         for cita in self.citas:
             if cita.placa.lower() == placa_normalizada and cita.esta_activa():
