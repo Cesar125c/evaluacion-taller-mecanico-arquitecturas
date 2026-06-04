@@ -1,13 +1,22 @@
-from repositories.cita_repository import CitaRepository
-from services.cita_service import CitaService
-from views.menu import Menu
+from src.application.use_cases.atender_cita import AtenderCitaUseCase
+from src.application.use_cases.buscar_cita import BuscarCitaUseCase
+from src.application.use_cases.cancelar_cita import CancelarCitaUseCase
+from src.application.use_cases.crear_cita import CrearCitaUseCase
+from src.application.use_cases.listar_citas import ListarCitasUseCase
+from src.infrastructure.repositories.cita_repository_memory import CitaRepositoryMemory
+from src.presentation.console.menu import Menu
 
 
 def main():
     """Punto de entrada del sistema."""
-    cita_repository = CitaRepository()
-    cita_service = CitaService(cita_repository)
-    menu = Menu(cita_service)
+    cita_repository = CitaRepositoryMemory()
+    menu = Menu(
+        crear_cita_use_case=CrearCitaUseCase(cita_repository),
+        listar_citas_use_case=ListarCitasUseCase(cita_repository),
+        buscar_cita_use_case=BuscarCitaUseCase(cita_repository),
+        cancelar_cita_use_case=CancelarCitaUseCase(cita_repository),
+        atender_cita_use_case=AtenderCitaUseCase(cita_repository),
+    )
     menu.iniciar()
 
 

@@ -1,51 +1,54 @@
 # Sistema de Citas - Taller Mecanico
 
-Proyecto academico desarrollado en Python para gestionar citas de un taller mecanico desde consola.
+**Rama actual:** `enfoque-ddd`
 
-La aplicacion permite registrar citas, listar todas las citas, buscar por ID, cancelar una cita y marcarla como atendida. Los datos se guardan en memoria, por lo que no se usa base de datos ni archivos persistentes.
+Proyecto academico en Python para gestionar citas de un taller mecanico desde consola. Permite crear citas, listarlas, buscarlas por ID, cancelarlas y marcarlas como atendidas. La informacion se guarda en memoria, sin base de datos ni librerias externas.
 
-## Arquitectura
+## Objetivo
 
-Esta version usa una arquitectura **monolitica por capas**. El sistema sigue siendo una sola aplicacion, pero el codigo esta separado por responsabilidades para que sea mas claro, mantenible y facil de extender.
+Aplicar **Domain-Driven Design (DDD)** para organizar el sistema alrededor del dominio del taller mecanico. A diferencia de una separacion solo tecnica, esta version ubica las reglas importantes en la entidad `Cita` y en los casos de uso.
 
-Flujo principal:
-
-```text
-Usuario -> View/Menu -> Service -> Repository -> Memoria
-```
-
-## Estructura del Proyecto
+## Estructura
 
 ```text
 evaluacion-taller-mecanico-arquitecturas/
 ├── main.py
 ├── README.md
 ├── .gitignore
-├── models/
-│   ├── __init__.py
-│   └── cita.py
-├── repositories/
-│   ├── __init__.py
-│   └── cita_repository.py
-├── services/
-│   ├── __init__.py
-│   └── cita_service.py
-└── views/
-    ├── __init__.py
-    └── menu.py
+└── src/
+    ├── domain/
+    │   ├── entities/cita.py
+    │   ├── value_objects/estado_cita.py
+    │   └── repositories/cita_repository.py
+    ├── application/use_cases/
+    │   ├── crear_cita.py
+    │   ├── listar_citas.py
+    │   ├── buscar_cita.py
+    │   ├── cancelar_cita.py
+    │   └── atender_cita.py
+    ├── infrastructure/repositories/cita_repository_memory.py
+    └── presentation/console/menu.py
 ```
 
-## Responsabilidad de Cada Archivo
+## Responsabilidades
 
-### `main.py`
+- `main.py`: punto de entrada; crea dependencias e inicia el menu.
+- `domain/entities/cita.py`: entidad principal con datos y comportamientos como `cancelar()` y `atender()`.
+- `domain/value_objects/estado_cita.py`: define `PENDIENTE`, `CANCELADA` y `ATENDIDA`.
+- `domain/repositories/cita_repository.py`: contrato del repositorio, sin almacenamiento real.
+- `application/use_cases`: coordina acciones del sistema: crear, listar, buscar, cancelar y atender citas.
+- `infrastructure/repositories/cita_repository_memory.py`: implementa el almacenamiento en memoria.
+- `presentation/console/menu.py`: muestra el menu, pide datos y presenta resultados.
 
-Punto de entrada del programa. Crea el repositorio, el servicio y el menu principal.
+## Flujo
 
-### `models/cita.py`
+```text
+Usuario -> Presentation -> Application -> Domain -> Infrastructure
+```
 
-Contiene la clase `Cita`, que representa una cita del taller.
+## Datos de una Cita
 
-Campos principales:
+Cada cita contiene:
 
 - `id`
 - `cliente`
@@ -55,44 +58,7 @@ Campos principales:
 - `servicio`
 - `estado`
 
-### `repositories/cita_repository.py`
-
-Administra el almacenamiento en memoria.
-
-Funciones principales:
-
-- Guardar citas.
-- Listar citas.
-- Buscar citas por ID.
-- Generar IDs autoincrementales.
-
-### `services/cita_service.py`
-
-Contiene la logica de negocio.
-
-Se encarga de:
-
-- Validar campos obligatorios.
-- Crear citas en estado `PENDIENTE`.
-- Cancelar citas.
-- Marcar citas como `ATENDIDA`.
-- Validar que el ID sea correcto.
-- Evitar cambios de estado no permitidos.
-
-### `views/menu.py`
-
-Maneja la interaccion con el usuario en consola.
-
-Se encarga de:
-
-- Mostrar el menu.
-- Pedir datos con `input()`.
-- Mostrar resultados con `print()`.
-- Llamar al servicio correspondiente.
-
 ## Funcionalidades
-
-El menu principal incluye:
 
 ```text
 1. Crear cita
@@ -103,42 +69,27 @@ El menu principal incluye:
 6. Salir
 ```
 
-Cada cita nueva inicia con estado `PENDIENTE`.
+## Reglas de Negocio
 
-Estados disponibles:
-
-- `PENDIENTE`
-- `CANCELADA`
-- `ATENDIDA`
-
-## Reglas Principales
-
-- Todos los campos de la cita son obligatorios.
+- Todos los campos son obligatorios.
 - El ID debe ser numerico.
-- No se puede cancelar una cita ya atendida.
-- No se puede atender una cita cancelada.
-- Si una cita no existe, se muestra un mensaje de error.
+- Toda cita nueva inicia como `PENDIENTE`.
+- No se permite otra cita activa para la misma placa.
+- Una cita activa es una cita que no esta `CANCELADA`.
+- No se puede cancelar una cita `ATENDIDA`.
+- No se puede atender una cita `CANCELADA`.
+- Si la cita no existe, se muestra un error.
 
 ## Ejecucion
-
-Desde la carpeta del proyecto:
 
 ```bash
 python main.py
 ```
 
-No requiere librerias externas.
+## Diferencia con Versiones Anteriores
 
-## Diferencia con Codigo Espagueti
+En `codigo-espagueti`, todo estaba mezclado en un solo archivo. En `monolitico-capas`, el sistema se separaba por capas tecnicas como modelos, servicios y repositorios. En esta version DDD, la organizacion se centra en el dominio: entidad `Cita`, estados, contrato de repositorio y casos de uso.
 
-En la version de codigo espagueti, todo estaba concentrado en un solo archivo: menu, validaciones, reglas de negocio y almacenamiento.
+## Conclusion
 
-En esta version por capas:
-
-- `main.py` solo inicia el sistema.
-- `views` maneja la consola.
-- `services` maneja las reglas de negocio.
-- `repositories` maneja los datos en memoria.
-- `models` representa la estructura de una cita.
-
-Esta separacion hace que el codigo sea mas ordenado, facil de entender y mas sencillo de modificar.
+Esta version mantiene una aplicacion simple de consola, pero con una estructura mas clara: el dominio contiene las reglas principales, la aplicacion coordina casos de uso, la infraestructura guarda datos en memoria y la presentacion maneja la consola.
