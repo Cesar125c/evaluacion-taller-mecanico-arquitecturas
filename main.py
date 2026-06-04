@@ -1,8 +1,11 @@
 # Sistema de Citas - Taller Mecánico (código-espagueti)
 # NOTA ACADÉMICA: Código intencionalmente desordenado para demostrar anti-patrones
 
-citas_registradas = []  # Almacenamiento en memoria
-proximo_id_disponible = 1  # Contador autoincremental para IDs
+# Lista global donde se almacenan las citas mientras el programa está abierto.
+citas_registradas = []
+
+# Controla el siguiente ID disponible para asignarlo a una nueva cita.
+proximo_id_disponible = 1
 
 # Ciclo de vida de una cita: PENDIENTE → ATENDIDA o CANCELADA
 ESTADO_PENDIENTE = "PENDIENTE"
@@ -34,6 +37,7 @@ def obtener_id_ingresado():
 
 def buscar_cita_por_identificador(id_cita):
     """Busca una cita en el registro por su identificador."""
+    # Recorre la lista de citas hasta encontrar una con el ID solicitado.
     for cita in citas_registradas:
         if cita["id"] == id_cita:
             return cita
@@ -57,7 +61,7 @@ def crear_cita():
     color_vehiculo = input("Color del vehículo: ").strip()
     tipo_servicio = input("Servicio solicitado: ").strip()
     
-    # Validar campos obligatorios
+    # Valida que el usuario haya ingresado todos los datos requeridos.
     campos_requeridos = [
         nombre_cliente,
         placa_vehiculo,
@@ -69,7 +73,7 @@ def crear_cita():
         print("❌ Error: Todos los campos son obligatorios.")
         return
     
-    # Crear cita con estado inicial PENDIENTE
+    # La cita se crea con estado inicial PENDIENTE antes de guardarse.
     nueva_cita = {
         "id": proximo_id_disponible,
         "cliente": nombre_cliente,
@@ -118,17 +122,17 @@ def cancelar_cita():
         print(f"❌ Error: No existe cita con ID {id_cita}.")
         return
     
-    # Transición no permitida: CANCELADA → descartada
+    # No se realizan cambios si la cita ya fue cancelada.
     if cita["estado"] == ESTADO_CANCELADA:
         print(f"ℹ️ La cita {id_cita} ya estaba cancelada.")
         return
     
-    # Transición no permitida: ATENDIDA → no se revierte
+    # Una cita atendida no puede regresar a estado cancelado.
     if cita["estado"] == ESTADO_ATENDIDA:
         print("❌ Error: No se puede cancelar una cita que ya fue atendida.")
         return
     
-    # Transición válida: PENDIENTE → CANCELADA
+    # Transición válida: PENDIENTE → CANCELADA.
     cita["estado"] = ESTADO_CANCELADA
     print(f"✅ Cita {id_cita} cancelada exitosamente.")
 
@@ -145,17 +149,17 @@ def marcar_cita_como_atendida():
         print(f"❌ Error: No existe cita con ID {id_cita}.")
         return
     
-    # Transición no permitida: ATENDIDA → ya finalizada
+    # No se realizan cambios si la cita ya fue atendida.
     if cita["estado"] == ESTADO_ATENDIDA:
         print(f"ℹ️ La cita {id_cita} ya estaba marcada como atendida.")
         return
     
-    # Transición no permitida: CANCELADA → no se puede reactivar
+    # Una cita cancelada no puede reactivarse para ser atendida.
     if cita["estado"] == ESTADO_CANCELADA:
         print("❌ Error: No se puede atender una cita que fue cancelada.")
         return
     
-    # Transición válida: PENDIENTE → ATENDIDA
+    # Transición válida: PENDIENTE → ATENDIDA.
     cita["estado"] = ESTADO_ATENDIDA
     print(f"✅ Cita {id_cita} marcada como atendida exitosamente.")
 
